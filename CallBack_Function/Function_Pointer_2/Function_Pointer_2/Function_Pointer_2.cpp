@@ -33,7 +33,7 @@ typedef int* pointer;
 // 그 함수 타입이 인자는 아무것도 안받고 출력는 int를 반환하는 함수 타입을 이제 func라고 부르겠다라고 선언을 한셈이다
 typedef int ARRAY[20];
 
-typedef int (*PFUNC)(int, int); // 왠만하면 이렇게 한번에 표현하는 버전을 기억 , 함수 포인터
+typedef int (*PFUNC)(int, int); // 웬만하면 이렇게 한번에 표현하는 버전을 기억 , 함수 포인터
 
 typedef int (Knight::* PMEMFUNC)(int, int); // 멤버 함수 포인터
 // 나이트 클래스의 멤버 함수로 사용한다고 했으니 다른 클래스로 위 코드를 이용하지 못한다
@@ -61,6 +61,7 @@ int main()
 	//int (*fn)(int, int); // 이렇게 한번에 사용하는 경우가 더 많으니까 익숙해지기
 
 	PFUNC fn;
+	// 위에서 *PFUNC 이렇게 typedef했었다
 	// 이 함수 타입 자체는 일반적인 그런 int라거나 아니면 클래스 타입과는 다르게 뭔가 메모리에 올라가는 개념이 아니라고 설명하고 있다.
 	// 그래서 FUNC t; 이 코드는 저런 함수라는 게 존재 하는데 함수를 타고가면 그 구현부가 있을것이다 라는거를 선언하는거에 불과하다
 
@@ -68,12 +69,12 @@ int main()
 	//typedef int(FUNC_TYPE)(int, int);
 
 	fn = Test;
-	// 일반 함수 포인터는 &를 생략할 수 있다.
+	// 일반 함수 포인터는 &를 생략할 수 있다.(배열처럼 함수이름이 함수의 시작 주소).
 	fn(1, 2);
 	(*fn)(1, 2); // 둘다 똑같은 기능
 
 	// 위 함수 포인터 선언 문법으로 [전역 함수 / 정적 함수]만 담을수 있다 (호출 규약이 동일한 애들)
-	//fn = &Knight::GetHp;
+	//fn = &Knight::GetHp; // error
 	Test(1, 2);
 
 	Knight k1;

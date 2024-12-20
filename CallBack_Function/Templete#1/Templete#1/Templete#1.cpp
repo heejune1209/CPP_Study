@@ -47,10 +47,6 @@ void Print(T1 a, T2 b)
 }
 
 
-
-
-
-
 // 연산자 오버로딩(전역함수 버전)오버로딩을 해서 나이트 클래스도 이제 적용을 할 수 있게끔 한다
 ostream& operator<<(ostream& os, const Knight& k)
 {
@@ -83,6 +79,7 @@ int main()
 
 	Knight k;
 	Print(k);
+	// 만약 템플릿 특수화가 아니었으면 void Print(T a) 이 함수가 호출되었을것이다
 
 	return 0;
 }
