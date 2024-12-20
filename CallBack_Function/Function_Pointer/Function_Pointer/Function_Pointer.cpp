@@ -10,6 +10,7 @@ using namespace std;
 // 함수 포인터 선언은 다음과 같다.
 
 // [반환 타입](함수 포인터 이름)(인자)
+ 
 
 // 보통은 길기 때문에 typedef를 이용하여 이름을 따로 지정해줄 수 있다.
 // typedef [반환 타입] (함수 포인터 이름)(인자);
@@ -73,7 +74,8 @@ public:
 // 중요한것은 어떤 함수의 형태를 만들어준 다음에, 그 함수에 주소를 받아주는 함수 포인터 형태로 일단 인자로 만들어 줬다는 게 굉장히 중요.
 
 typedef bool(ITEM_SELECTOR)(Item*, int);
-
+// 반환타입(함수 포인터명)(인자)
+// bool(*selector)(Item* item) typedef안하고 이 방식으로 Finditem의 인자로 설정해도 된다
 Item* Finditem(Item items[], int itemcount, ITEM_SELECTOR* selector, int value)
 {
 	for (int i = 0; i < itemcount; i++)
@@ -136,6 +138,7 @@ int main()
 	cout << result << endl;
 
 	int result2 = (*fn)(1, 2); // 함수 포인터는 *(접근 연산자) 붙어도 함수 주소! , 이렇게 써도 위에 기본 문법 버전과 똑같다
+	// 그냥 이 버전으로 사용하도록 기억!
 	cout << result2 << endl;
 	/*
 	fn = Sub;
@@ -150,6 +153,11 @@ int main()
 
 	Item items[10] = {};
 	items[3]._rarity = 2; // RARE
+
+	// 비효율적 방법
+	/*Item* rareitem = FindByrarity(items, 10, 3);
+	Item* itemid = FindByitemid(items, 10, 2);*/
+
 	Item* rareitem = Finditem(items, 10, israretitem, 2); // 함수에 어떤 함수를 인자로 받는다
 
 
