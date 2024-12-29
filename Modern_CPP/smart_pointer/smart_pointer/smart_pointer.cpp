@@ -29,8 +29,8 @@ public:
             _target->_hp -= _damage;
             cout << "HP : " << _target->_hp << endl;
         }
-    }
-    */
+    }*/
+    
 
     // weak_ptr
     void Attack() {
@@ -46,7 +46,7 @@ public:
     int _hp = 100;
     int _damage = 10;
     // Knight* _target = nullptr;
-    // shared_ptr<Knight> _target = nullptr;
+    //shared_ptr<Knight> _target = nullptr;
     weak_ptr<Knight> _target;
 };
 
@@ -56,8 +56,8 @@ public:
 class RefCountBlock
 {
 public:
-    int _refCount = 1;
-    // int _weakCount = 1;  // weak_ptr
+    int _refCount = 1; // _refCount는 객체를 참고하는 애가 몇명인지 체크
+    // int _weakCount = 1;  // weak_ptr는 이런 위크 포인터가 몇개가 지금 RefCountBlock를 참고하는지를 두개로 관리를 하게 돼요
 };
 
 template<typename T>
@@ -141,8 +141,12 @@ int main()
     SharedPtr<Knight> k4; // k4는 빈상태이다
     {
         SharedPtr<Knight> k3(new Knight()); // 이제는 이 Shared PTR이 나이트를 관리하는 그런 주체가 되었다고 볼 수가 있겠습니다
+        // Knight의 기본생성자를 호출한 뒤, SharedPtr(T* ptr) : _ptr(ptr) 이 부분이 실행됨
         k4 = k3; // 복사대입 연산자로 실행됨
     }
+    // 괄호가 끝나서 refcount가 1이 됨.
+    // 여기서 k3가 사라져도 k3한테 복사한 정보는 k4가 여전히 가지고 있음
+    // 그냥 포인터였으면 가리키던 객체가 사라졌기 때문에 분명 메모리 오염이 발생했을것이다.
 
     // 그래가지고 이렇게 스마트 포인터로 관리를 하는 순간 우리가 명시적으로 이 객체를 delete 해줄 필요가 없어지고 
     // 뭔가 자동으로 이 Shared PTR라는 객체 자체가 내부적으로 특정 조건을 만족하면 즉 여기서는 이제 아무도 얘를 기억하지 않을 때였죠.
@@ -154,16 +158,17 @@ int main()
     {
         shared_ptr<Knight> k6 = make_shared<Knight>();
         k5->_target = k6; // 그 다음에 K5가 이제는 이 타겟 자체를 이런 식으로 스마트 포인트로 주시를 하게 된다
-        // k6->_target = k5;    // 사이클 발생시 삭제가 되지 않는 문제 발생
+        //k6->_target = k5;    // 사이클 발생시 삭제가 되지 않는 문제 발생
 
         // 해당 포인터를 사용하면 범위가 작아 원래라면 소멸될 객체도 누군가가 참조를 하고 있다면 소멸되지 않는 특징이 있다. 
         // 단, 사이클 발생시 삭제가 되지 않는 문제가 발생하게 된다.
         // 서로의 존재를 서로 기억하고 있기 때문.
 
         // 소멸 전에 nullptr로 밀어주는 부분이 필요하다.
-        // k5->_target = nullptr;
-        // k6->_target = nullptr;
+        //k5->_target = nullptr; // k5가 k6를 기억하고 있었는데(가리키고 있었는데) nullptr로 밀어주기
+        //k6->_target = nullptr; // k6가 k5를 기억하고 있었는데(가리키고 있었는데) nullptr로 밀어주기
     }
+    // k5,k6를 nullptr로 밀어준뒤 괄호가 끝나면서 k6는 소멸해서 "Knight 소멸" 을 출력하는것을 알수 있다. 여기서 만약 k5를 nullptr로 밀어주지 않으면 소멸되지 않는다.
     // k6라는 애를 명시적으로 지금 삭제를 한다 하더라도 , 누군가가 k6를 기억하고 있어서 k6가 사라지지 않고 남아있다. -> k5가 가리키고 있기 때문
     // 괄호 밖에 나와도 k5는 아직까지 메모리가 잘 살아 있다. 그래서 k5->Attack();이것이 별 문제없이 통과된다
     // 즉 내가 이 나이트를 기억하고 있기 때문에 너가 멋대로는 사라질 수가 없고 
@@ -171,10 +176,11 @@ int main()
     // 이렇게 하면은 아까 발생했던 그 엉뚱한 메모리를 이미 날라간 메모리를 참조하는 dangling 문제 혹은 use after free와 같은 문제들에 대해서 
     // 일단은 어느 정도 자유로워지게 된다는 장점이 생김
     // 이것이 shared_ptr의 장점이다
-    k5->Attack();
+     k5->Attack();
+     // 위에서 k5->_target = nullptr; 코드로 _target을 nullptr로 밀어줬기때문에 Attack의 기능이 실행되지 않았다.
 
     // weak_ptr : 객체가 날라갔는지 유무를 확인 .expired() == false면 유효
-    // .lock() -> shared_ptr 반환
+    // .lock() -> shared_ptr을 반환
     // 객체가 날라갔는지 유무를 확인하게 되고 경우에 따라 shared_ptr를 반환해줘서 사이클 발생 같은 문제를 막아줄 수 있다.
 
     // weak_ptr을 쓰면 생명주기에서 자유로워 진다는 장점이 생김. 근데 단점은 expired로 명시적으로 체크를 한다음에 
@@ -183,7 +189,24 @@ int main()
     // expired : 해당 객체가 날라갔는지 확인. 아직 있으면 false를 반환한다.
     // lock: 해당 객체의 shared_ptr 타입을 반환한다.
 
-    // unique_ptr :  말 그대로 한 객체를 오로지 자기 자신만 가리키고 있어야 하는 포인터이다. 중복으로 가리키는 건 불가능하나 오른값 참조를 이용해 이동 연산은 가능하다.
+    shared_ptr<Knight> k7 = make_shared<Knight>();
+    {
+        shared_ptr<Knight> k8 = make_shared<Knight>();
+        k7->_target = k8;
+        k8->_target = k7;
+        // 이 상황은 괄호 밖으로 나가면 k7이 주시하고 있는 타겟이 더이상 유효하지 않다는 상황이다.
+        // 그리고 서로를 바라보고 있는 상황이지만, _target이 weak_ptr로 잡혀있기 때문에 _refCount엔 영향을 주지 않는다.
+        // 그래서 K1이 날라가고 K2도 지금 소멸이 될 때 각각 레플 카운트가 0 , 0이 되면서 메모리가 날라간다고 보면 된다. (shared_ptr에서 처럼 k7이랑, k8을 nullptr로 밀어줄 필요가 없음)
+    }
+    
+    k7->Attack();
+    // 그래서 k8이 날라간 상황엔 weak_ptr을 쓴 상태에선 이 사이클 문제에 대해서 expired로 체크를 하고 있고 이 상황엔 true를 반환하기 때문에 void Attack()이 실행이 되지않아서 안전하다.
+    // 즉, 그래서 expired로 체크를 하고 lock로 포인터를 다시 받아서 사용한다.
+    // 그래서 엉뚱한 메모리를 삭제하는 문제, 그러니까 아직 누군가가 나를 가리키고 있는데 삭제하는 문제에 대해서는 일단 벗어날 수 있게 된다.
+
+
+    // unique_ptr :  말 그대로 한 객체를 오로지 자기 자신만 가리키고 있어야 하는 포인터이다. 그래서 다른 애한테 멋대로 넘겨줄 수가 없다는 차이가 생긴다. 
+    // 중복으로 가리키는 건 불가능하나 오른값 참조를 이용해 이동 연산은 가능하다.
     unique_ptr<Knight> uptr = make_unique<Knight>();
     // unique_ptr<Knight> uptr2 = uptr; // 불가능
     unique_ptr<Knight> uptr2 = move(uptr);  // 오른값 참조 캐스팅
