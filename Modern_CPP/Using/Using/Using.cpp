@@ -16,7 +16,7 @@ using namespace std;
 typedef __int64 id;
 
 // using
-using id2 = int;
+using id2 = int; // int를 id2라고 쓰겠다
 
 // using
 template<typename T>
@@ -26,7 +26,7 @@ using List = list<T>;
 template<typename T>
 struct List2
 {
-	typedef list<T> type;
+	typedef list<T> type; // list<T>을 type이라고 쓰겠다.
 };
 
 // typedef

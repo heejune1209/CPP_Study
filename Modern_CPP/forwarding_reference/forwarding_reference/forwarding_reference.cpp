@@ -29,7 +29,7 @@ void Test_copy(Knight k)
 }
 
 template<typename T>
-void Test_ForwardingRef(T&& param) // 전달 참조
+void Test_ForwardingRef(T&& param) // 전달 참조 , 만약에 인수에다가 이렇게 const T&& param 해주면 얘는 더 이상 전달 참조로 동작하지 않고 오른값 참조로 돌변하게 된다.
 {
 	// TODO
 	// move(param); // 처음에 넘겨줄때 왼쪽값을 넘겨줬다고 하면 이런식으로 무브를 하면 큰일이 난다
@@ -69,13 +69,16 @@ int main()
 	Knight k1;
 	Test_RvalueRef(move(k1)); // rvalue_cast, 기본생성자 출력
 
-	// 왼값 참조
+	// 왼값 참조로 되고있다.
 	Test_ForwardingRef(k1); // 복사 생성자 출력
+	// 오른값 참조를 받아주는 함수이니까 왼값을 넣었을때 에러가 떠야하는데 통과가 되는것을 볼수있다.
 	// 오른값 참조
 	Test_ForwardingRef(move(k1)); // 이동 생성자 출력
 
 	// 왼값 참조
-	auto&& k2 = k1;
+	auto&& k2 = k1; 
+	// 왼값 참조가 되고있다.
+	
 	// 오른값 참조
 	auto&& k3 = move(k1);
 
