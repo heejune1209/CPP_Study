@@ -43,12 +43,27 @@ Item* FindItem(Item items[], int itemCount, T selector)
     {
         Item* item = &items[i];
         // TODO : 조건 체크
-        if (selector(item))
+        if (selector(item)) // 클래스 객체를 받아서 함수 객체를 조건으로 사용
             return item;
     }
 
     return nullptr;
 }
+
+// 함수 포인터 #1에서 했던 버전
+//typedef bool(ITEM_SELECTOR)(Item* , int);
+//Item* Finditem(Item items[], int itemcount, ITEM_SELECTOR* selector, int value)
+//{
+//    for (int i = 0; i < itemcount; i++)
+//    {
+//        Item* item = &items[i];
+//        if (selector(item, value))
+//            return item;
+//        // TODO 조건
+//    }
+//
+//    return nullptr;
+//}
 
 int main()
 {
@@ -81,11 +96,16 @@ int main()
     FindByRarity functor2;
     functor2._rarity = 1;
 
-    Item* item1 = FindItem(items, 10, functor1);
-    Item* item2 = FindItem(items, 10, functor2);
+    Item* item1 = FindItem(items, 10, functor1); 
+    Item* item2 = FindItem(items, 10, functor2); 
+    // 함수 포인터 #1 과 똑같은 상황으로 코드를 다르게 만들었다.
+    // 이 스크립트에선 rarity 판정 기능과 ownerId 판정 기능을 클래스로 만들어서 함수 객체로 사용하였다.
+    // 그때는 함수 포인터를 이용해서 코드를 작성했고, 이번엔 함수 객체와 템플릿을 이용해서 코드를 작성했다.
 
+    // Item* rareitem = Finditem(items, 10, israretitem, 2); 함수 포인터#1 에서 했던 코드 버전
+    // israretitem은 rarity를 찾아주는 함수이다
 
-
+    // 약간 함수 포인터는 함수를 데이터처럼 썼던것 같고, 콜백함수에선 인자로 클래스 객체를 넘겨서, 넘긴 객체(아이템 찾는 판정 용도)를 함수 객체로 사용했다는 차이가 있다
 
     return 0;
 }
