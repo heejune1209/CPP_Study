@@ -139,6 +139,7 @@ int main()
 
 		// Erase By key
 		m.erase(randomValue);
+		// erase 함수는 여러가지 버전이 있다
 		// key값에 해당하는 노드를 삭제.
 	}
 
