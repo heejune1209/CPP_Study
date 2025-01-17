@@ -38,6 +38,13 @@ enum class ObjectType2
     Monster,
     Projectile
 };
+// 익명 열거형
+enum
+{
+    DIR_COUNT = 4,
+    MAX_HP = 100,
+    MAX_MP = 50
+};
 
 
 int main()
@@ -76,6 +83,15 @@ int main()
 
     unsigned int bitFlag;
     bitFlag = (1 << static_cast<int>(ObjectType::Player));
+
+    // 이름이 없는 Enum도 있다 그것을 익명 열거형이라고 하는데 이것은 일반적으로 간단한 상수 값을 정의하는데 사용되고, 
+    // 특정한 타입 이름없이 전역 상수처럼 동작한다. (별도의 네임스페이스 없이 접근 가능)
+    cout << "DIR_COUNT: " << DIR_COUNT << endl;
+    cout << "MAX_HP: " << MAX_HP << endl;
+    cout << "MAX_MP: " << MAX_MP << endl;
+
+    // 그리고 추가로 Enum을 사용할때 이름이 있는 경우 특정 타입으로 변수 선언이 가능하다.
+    PlayerType t1 = PT_Archer; // t1에 PT_Archer(1)을 대입
 
     return 0;
 }
