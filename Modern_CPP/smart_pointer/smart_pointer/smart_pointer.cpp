@@ -189,6 +189,9 @@ int main()
     // expired : 해당 객체가 날라갔는지 확인. 아직 있으면 false를 반환한다.
     // lock: 해당 객체의 shared_ptr 타입을 반환한다.
 
+     // weakptr을 shared_ptr이랑 같이 쓰는게 더 안전할거 같다.
+     // 아니면 shared_ptr만 쓴다면 꼭 사이클 문제가 발생하지 않게 소멸 전에 nullptr로 밀어주는 부분이 필요하다.
+
     shared_ptr<Knight> k7 = make_shared<Knight>();
     {
         shared_ptr<Knight> k8 = make_shared<Knight>();
